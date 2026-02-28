@@ -3,14 +3,13 @@ import random
 import urllib.request
 from collections import Counter
 from pathlib import Path
-
+import cowsay
 
 def bullscows(guess: str, secret: str) -> tuple[int, int]:
     bulls = sum(1 for g, s in zip(guess, secret) if g == s)
     common = sum((Counter(guess) & Counter(secret)).values())
     cows = common - bulls
     return bulls, cows
-
 
 def gameplay(ask, inform, words: list[str]) -> int:
     secret = random.choice(words)
@@ -23,7 +22,6 @@ def gameplay(ask, inform, words: list[str]) -> int:
         if guess == secret:
             return attempts
 
-
 def ask(prompt: str, valid: list[str] | None = None) -> str:
     while True:
         print(prompt, end="")
@@ -31,18 +29,14 @@ def ask(prompt: str, valid: list[str] | None = None) -> str:
         if not valid or s in valid:
             return s
 
-
 def inform(format_string: str, bulls: int, cows: int) -> None:
-    print(format_string.format(bulls, cows))
-
+    print(cowsay.cowsay(format_string.format(bulls, cows)))
 
 def _is_url(s: str) -> bool:
     return s.startswith("http://") or s.startswith("https://")
 
-
 def _load_words_from_text(text: str) -> list[str]:
     return [w for w in (x.strip() for x in text.split()) if w]
-
 
 def _load_dictionary(source: str) -> list[str]:
     if _is_url(source):
@@ -51,7 +45,6 @@ def _load_dictionary(source: str) -> list[str]:
         return _load_words_from_text(data.decode("utf-8", errors="replace"))
 
     return _load_words_from_text(Path(source).read_text(encoding="utf-8", errors="replace"))
-
 
 def _filter_words(words: list[str], length: int) -> list[str]:
     out = []
@@ -64,7 +57,6 @@ def _filter_words(words: list[str], length: int) -> list[str]:
         seen.add(w)
         out.append(w)
     return out
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
