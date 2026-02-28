@@ -24,7 +24,7 @@ def gameplay(ask, inform, words: list[str]) -> int:
 
 def ask(prompt: str, valid: list[str] | None = None) -> str:
     while True:
-        print(prompt, end="")
+        print(cowsay.cowsay(prompt))
         s = input().strip()
         if not valid or s in valid:
             return s
