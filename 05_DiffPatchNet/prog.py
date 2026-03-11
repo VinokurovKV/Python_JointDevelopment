@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import asyncio
 import shlex
 import cowsay
@@ -51,6 +52,26 @@ async def chat(reader, writer):
                             name = cow
                             logged_users[name] = me
                             await clients[me].put(f"Logged in as {name}")
+
+                    case ["say", cow, *text]:
+                        if name is None:
+                            await clients[me].put("Login first")
+                        elif cow not in logged_users:
+                            await clients[me].put("Login is not known")
+                        else:
+                            msg = " ".join(text)
+                            target = logged_users[cow]
+                            await clients[target].put(cowsay.cowsay(msg, cow=name))
+
+                    case ["yield", *text]:
+                        if name is None:
+                            await clients[me].put("Login first")
+                        else:
+                            msg = " ".join(text)
+                            out = cowsay.cowsay(msg, cow=name)
+                            for user, peer in logged_users.items():
+                                if peer != me:
+                                    await clients[peer].put(out)
 
                     case ["quit"]:
                         if name is not None:
