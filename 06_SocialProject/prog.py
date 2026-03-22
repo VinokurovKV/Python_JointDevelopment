@@ -16,12 +16,27 @@ class CowClient(cmd.Cmd):
         super().__init__()
         self.sock = sock
 
-    def default(self, arg):
-        self.sock.sendall((arg + "\n").encode())
+    def do_who(self, arg):
+        self.sock.sendall(b"who\n")
+
+    def do_cows(self, arg):
+        self.sock.sendall(b"cows\n")
+
+    def do_login(self, arg):
+        self.sock.sendall(f"login {arg}\n".encode())
+
+    def do_say(self, arg):
+        self.sock.sendall(f"say {arg}\n".encode())
+
+    def do_yield(self, arg):
+        self.sock.sendall(f"yield {arg}\n".encode())
 
     def do_quit(self, arg):
         self.sock.sendall(b"quit\n")
         return True
+
+    def default(self, arg):
+        print("Unknown command")
 
 
 def spam(cmdline, sock):
