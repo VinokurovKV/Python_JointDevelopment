@@ -16,6 +16,12 @@ class CowClient(cmd.Cmd):
         super().__init__()
         self.sock = sock
 
+    def ask_server(self, command):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect((host, port))
+            s.sendall((command + "\n").encode())
+            return s.recv(1024).decode().strip().split()
+
     def do_who(self, arg):
         self.sock.sendall(b"who\n")
 
@@ -34,6 +40,18 @@ class CowClient(cmd.Cmd):
     def do_quit(self, arg):
         self.sock.sendall(b"quit\n")
         return True
+
+    def complete_login(self, text, line, begidx, endidx):
+        words = line[:endidx].split()
+        if len(words) == 1:
+            return [c for c in self.ask_server("cows") if c.startswith(text)]
+        return []
+
+    def complete_say(self, text, line, begidx, endidx):
+        words = line[:endidx].split()
+        if len(words) == 1:
+            return [c for c in self.ask_server("who") if c.startswith(text)]
+        return []
 
     def default(self, arg):
         print("Unknown command")
